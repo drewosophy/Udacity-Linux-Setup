@@ -10,6 +10,7 @@ This Linux server setup goes through the process of setting up a Linux instance 
 ## Note
 
 i. IP address: 3.10.223.58/, port: 2200
+
 ii. http://3.10.223.58/
 
 ## AWS Linux Server Setup
@@ -70,8 +71,8 @@ If you run into any errors based on your setup, another good starting point is [
 - Clone the catalog repo using git clone (mine is https://github.com/drewosophy/course_catalogue/) into the directory.
 - Create and edit wsgi file 'sudo touch catalog.wsgi' and 'sudo nano catalog.wsgi'
 - Copy the following into the terminal:
-''' 
 
+```
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
@@ -79,10 +80,13 @@ sys.path.insert(0, "/var/www/catalog/")
 
 from catalog import app as application
 application.secret_key = 'supersecretkey' 
-'''
+
+```
+
 - Rename the application.py to __init__.py
 - Get the virtual environment running: 
-'''
+
+```
 
 sudo apt-get install python-pip
 sudo pip install virtualenv
@@ -90,7 +94,8 @@ sudo virtualenv venv
 source venv/bin/activate
 sudo chmod -R 777 venv
 
-'''
+```
+
 - Edit your new __init__.py file using 'nano __init__.py' and change the 'client_secrets.jso' filepath in your CLIENT_ID variable to to '/var/www/catalog/catalog/client_secrets.json'.
 - Adjust your host and port addresses. 
 - Configure and Enable your virtual host
