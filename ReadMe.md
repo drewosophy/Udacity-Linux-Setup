@@ -42,9 +42,63 @@ If you run into any errors based on your setup, another good starting point is [
 - You can then ssh into your terminal. I will demonstrate my catalogue project IP address: 'ssh ubuntu@3.10.223.58/ -p 22 -i ~/.ssh/replace with your ssh key file name'. 
 - You should now be connected from your local machine. 
 
-## Add grader user
+## Setting up grader user and server for deployment
 - You can add a new root user such as 'grader' by entering the following command in your linux terminal via ssh: 'sudo adduser grader'
+- Refresh the terminal and generate a key for grader ssh access: 'ssh-keygen -f ~/.ssh/udacity_key.rsa'
+- Read and copy the public key: 'cat ~/.ssh/udacity_key.rsa.pub'
+- Navigate to the grader folder using 'cd /home/grader'
+- Create a new .ssh directory similar to the one on your local machine using 'sudo mkdir .ssh'
+- Create a file to save the keys 'sudo touch ssh/authorized_keys'
+- To edit the keys in your terminal, use 'sudo nano .ssh/authorized_keys', paste the keys in and you're done with the keys setup!
+- Then you can change the root user to 'grader' using the following: 'sudo chown -R grader:grader /home/grader/.ssh'
+- Exit and reboot the server instance.
+- Using the key for grader, follow the earlier instruction and ssh into the instance using the IP grader@3.10.223.58.
+- To disable root login and make sure we use key-based authentication, navigate to your sshd_config end edit both in 'sudo nano /etc/ssh/sshd_config'.  
+- Log into server as grader using the key file path you created 'ssh -i ~/.ssh/grader_key.rsa grader@3.10.223.58'.
 
+## Configure UFW (Uncomplicated Firewall)
+- sudo ufw allow 2200/tcp
+- sudo ufw allow 80/tcp
+- sudo ufw allow 123/udp
+- sudo ufw enable
+- Reboot the server
+
+## Deploy the Application
+- ssh in as grader again
+- Navigate to 'cd /var/www' 
+- Make a new directory called 'Catalog' 
+- Clone the catalog repo using git clone (mine is https://github.com/drewosophy/course_catalogue/) into the directory.
+- Create and edit wsgi file 'sudo touch catalog.wsgi' and 'sudo nano catalog.wsgi'
+- Copy the following into the terminal:
+''' 
+
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0, "/var/www/catalog/")
+
+from catalog import app as application
+application.secret_key = 'supersecretkey' 
+'''
+- Rename the application.py to __init__.py
+- Get the virtual environment running: 
+'''
+
+sudo apt-get install python-pip
+sudo pip install virtualenv
+sudo virtualenv venv
+source venv/bin/activate
+sudo chmod -R 777 venv
+
+'''
+- Edit your new __init__.py file using 'nano __init__.py' and change the 'client_secrets.jso' filepath in your CLIENT_ID variable to to '/var/www/catalog/catalog/client_secrets.json'.
+- Adjust your host and port addresses. 
+- Configure and Enable your virtual host
+- Setup your database with a new user and adjust your db engine code to creating a PostgreSQL engine, adjusting the destination according to your setup.
+- Using python3, run the python files to create the DB and load the default data into it. 
+- Restart the server and you should be able to see your live application
+
+This process is not entirely straightforward, I found myself encountering various issues along the way so just keep trying and check out some of the links in my acknowledgements!
 
 ## Ackowledgement:
 
